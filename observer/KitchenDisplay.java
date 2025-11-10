@@ -13,7 +13,7 @@ public class KitchenDisplay implements OrderObserver {
 
     @Override
     public void update(Order order) {
-        System.out.println("\n🍳 [KITCHEN - " + kitchenName + "]");
+        System.out.println("\n [KITCHEN - " + kitchenName + "]");
         System.out.println("New Order Received: " + order.getOrderId());
         System.out.println("Items to prepare:");
         for (MenuItem item : order.getItems()) {

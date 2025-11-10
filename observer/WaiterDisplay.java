@@ -12,7 +12,7 @@ public class WaiterDisplay implements OrderObserver {
 
     @Override
     public void update(Order order) {
-        System.out.println("\n🧑‍🍳 [WAITER - " + waiterName + "]");
+        System.out.println("\n [WAITER - " + waiterName + "]");
         System.out.println("New Order Alert: " + order.getOrderId());
         System.out.println("Order Type: " + order.getOrderType());
         System.out.println("Total Items: " + order.getItems().size());
