@@ -1,5 +1,13 @@
 package facade;
 
+import billing.*;
+import Strategy.discount.DiscountStrategy;
+import Strategy.discount.NoDiscount;
+import Strategy.discount.PizzaDiscount;
+import Strategy.payment.CardPayment;
+import Strategy.payment.CashPayment;
+import Strategy.payment.MobileWalletPayment;
+import Strategy.payment.PaymentStrategy;
 import model.*;
 import factory.abstractfactory.*;
 import factory.factorymethod.*;
@@ -8,7 +16,6 @@ import observer.*;
 
 import java.util.Scanner;
 
-
 public class RestaurantFacade {
     private OrderNotifier orderNotifier;
     private Scanner scanner;
@@ -16,7 +23,7 @@ public class RestaurantFacade {
     public RestaurantFacade() {
         this.orderNotifier = new OrderNotifier();
         this.scanner = new Scanner(System.in);
-        
+
         // Register observers (Kitchen and Waiter)
         orderNotifier.attach(new KitchenDisplay("Main Kitchen"));
         orderNotifier.attach(new WaiterDisplay("John"));
@@ -61,11 +68,52 @@ public class RestaurantFacade {
 
         // Step 3: Place order (notify kitchen and waiter)
         if (!order.getItems().isEmpty()) {
-            orderNotifier.placeOrder(order);
-            System.out.println("\n💳 Order ready for billing (Hatem Will handle payment)");
+            orderNotifier.placeOrder(order); // <-- this is where the notification happens
+
+            // === PLACE THE BILLING & PAYMENT CODE BELOW THIS LINE ===
+            // Example: choose a discount automatically based on items (simple rule)
+            DiscountStrategy discount = new NoDiscount(); // default
+            boolean hasPizza = order.getItems().stream().anyMatch(i -> "Pizza".equalsIgnoreCase(i.getCategory()));
+            if (hasPizza)
+                discount = new PizzaDiscount(0.10);
+
+            // create billing service with tax rate (e.g., 14%)
+            BillingService billing = new BillingService(new TaxCalculator(0.14));
+            billing.setDiscountStrategy(discount);
+
+            // Ask for payment
+            
+                System.out.println("\n  ┌───────────────  Payment  ─────────────────┐");
+                System.out.println("  │ 1. Cash                                   │");
+                System.out.println("  │ 2. Card                                   │");
+                System.out.println("  │ 3. Mobile Wallet                          │");
+                System.out.println("  └───────────────────────────────────────────┘");
+                System.out.print("Enter choice: ");
+            
+            int payChoice = getUserChoice();
+            PaymentStrategy payment;
+            switch (payChoice) {
+                case 2:
+                    scanner.nextLine();
+                    System.out.print("Enter card number: ");
+                    String card = scanner.nextLine();
+                    payment = new CardPayment(card);
+                    break;
+                case 3:
+                    scanner.nextLine();
+                    System.out.print("Enter wallet id: ");
+                    String wallet = scanner.nextLine();
+                    payment = new MobileWalletPayment(wallet);
+                    break;
+                default:
+                    payment = new CashPayment();
+            }
+
+            Bill bill = billing.checkout(order, payment);
         } else {
             System.out.println("No items in order!");
         }
+
     }
 
     private void displayMainMenu() {
@@ -84,13 +132,20 @@ public class RestaurantFacade {
         System.out.println("2. Delivery");
         System.out.println("3. Takeaway");
         System.out.print("Choice: ");
-        
+
         int choice = getUserChoice();
         switch (choice) {
-            case 1: order.setOrderType("Dine-in"); break;
-            case 2: order.setOrderType("Delivery"); break;
-            case 3: order.setOrderType("Takeaway"); break;
-            default: order.setOrderType("Dine-in");
+            case 1:
+                order.setOrderType("Dine-in");
+                break;
+            case 2:
+                order.setOrderType("Delivery");
+                break;
+            case 3:
+                order.setOrderType("Takeaway");
+                break;
+            default:
+                order.setOrderType("Dine-in");
         }
         System.out.println("Order type set to: " + order.getOrderType() + "\n");
     }
@@ -106,9 +161,15 @@ public class RestaurantFacade {
         MenuFactory factory = null;
 
         switch (familyChoice) {
-            case 1: factory = new VegetarianMenuFactory(); break;
-            case 2: factory = new NonVegetarianMenuFactory(); break;
-            case 3: factory = new KidsMenuFactory(); break;
+            case 1:
+                factory = new VegetarianMenuFactory();
+                break;
+            case 2:
+                factory = new NonVegetarianMenuFactory();
+                break;
+            case 3:
+                factory = new KidsMenuFactory();
+                break;
             default:
                 System.out.println("Invalid choice!");
                 return;
@@ -125,10 +186,18 @@ public class RestaurantFacade {
         MenuItem item = null;
 
         switch (itemChoice) {
-            case 1: item = factory.createAppetizer(); break;
-            case 2: item = factory.createMainCourse(); break;
-            case 3: item = factory.createDessert(); break;
-            case 4: item = factory.createBeverage(); break;
+            case 1:
+                item = factory.createAppetizer();
+                break;
+            case 2:
+                item = factory.createMainCourse();
+                break;
+            case 3:
+                item = factory.createDessert();
+                break;
+            case 4:
+                item = factory.createBeverage();
+                break;
             default:
                 System.out.println("Invalid choice!");
                 return;
@@ -136,15 +205,14 @@ public class RestaurantFacade {
 
         // Customize with add-ons (Decorator)
         item = customizeItem(item);
-        
+
         System.out.print("Quantity: ");
         int quantity = getUserChoice();
-        
+
         order.addItem(item, quantity);
-        System.out.println("✓ Added: " + item.getDescription() + " x" + quantity);
+        System.out.println(" Added: " + item.getDescription() + " x" + quantity);
     }
 
-  
     private void addPizzaItem(Order order) {
         System.out.println("\nSelect Pizza Style:");
         System.out.println("1. Italian Pizza");
@@ -155,57 +223,58 @@ public class RestaurantFacade {
         PizzaFactory factory = null;
 
         switch (styleChoice) {
-            case 1: factory = new ItalianPizzaFactory(); break;
-            case 2: factory = new EasternPizzaFactory(); break;
+            case 1:
+                factory = new ItalianPizzaFactory();
+                break;
+            case 2:
+                factory = new EasternPizzaFactory();
+                break;
             default:
                 System.out.println("Invalid choice!");
                 return;
         }
 
         System.out.print("Enter pizza type (e.g., Margherita, Pepperoni): ");
-        scanner.nextLine(); 
+        scanner.nextLine();
 
         String pizzaType = scanner.nextLine();
 
         MenuItem pizza = factory.orderPizza(pizzaType);
-        
+
         // Customize with add-ons (Decorator)
         pizza = customizeItem(pizza);
-        
+
         System.out.print("Quantity: ");
         int quantity = getUserChoice();
-        
+
         order.addItem(pizza, quantity);
-        System.out.println("✓ Added: " + pizza.getDescription() + " x" + quantity);
+        System.out.println(" Added: " + pizza.getDescription() + " x" + quantity);
     }
 
- 
     private void addBurgerItem(Order order) {
         BurgerFactory factory = new ClassicBurgerFactory();
-        
+
         System.out.print("Enter burger type (Beef, Chicken, Veggie): ");
 
         scanner.nextLine();
-        
+
         String burgerType = scanner.nextLine();
 
         MenuItem burger = factory.orderBurger(burgerType);
-        
-     
+
         burger = customizeItem(burger);
-        
+
         System.out.print("Quantity: ");
         int quantity = getUserChoice();
-        
+
         order.addItem(burger, quantity);
-        System.out.println("✓ Added: " + burger.getDescription() + " x" + quantity);
+        System.out.println(" Added: " + burger.getDescription() + " x" + quantity);
     }
 
-   
     private MenuItem customizeItem(MenuItem item) {
         System.out.println("\nCustomize your item (choose add-ons):");
         System.out.println("Current: " + item.getDescription() + " - $" + item.getPrice());
-        
+
         boolean customizing = true;
         while (customizing) {
             System.out.println("\n1. Extra Cheese (+$15)");
@@ -217,40 +286,40 @@ public class RestaurantFacade {
             System.out.print("Choice: ");
 
             int choice = getUserChoice();
-            
+
             switch (choice) {
-                case 1: 
+                case 1:
                     item = new ExtraCheeseDecorator(item);
                     System.out.println("Added: Extra Cheese");
                     break;
-                case 2: 
+                case 2:
                     item = new MushroomDecorator(item);
                     System.out.println("Added: Mushrooms");
                     break;
-                case 3: 
+                case 3:
                     item = new OlivesDecorator(item);
                     System.out.println("Added: Olives");
                     break;
-                case 4: 
+                case 4:
                     item = new SpicySauceDecorator(item);
                     System.out.println("Added: Spicy Sauce");
                     break;
-                case 5: 
+                case 5:
                     item = new BBQSauceDecorator(item);
                     System.out.println("Added: BBQ Sauce");
                     break;
-                case 6: 
+                case 6:
                     customizing = false;
                     break;
                 default:
                     System.out.println("Invalid choice!");
             }
-            
+
             if (customizing && choice >= 1 && choice <= 5) {
                 System.out.println("Current: " + item.getDescription() + " - $" + item.getPrice());
             }
         }
-        
+
         return item;
     }
 
@@ -258,7 +327,7 @@ public class RestaurantFacade {
         try {
             return scanner.nextInt();
         } catch (Exception e) {
-            scanner.nextLine(); 
+            scanner.nextLine();
             return -1;
         }
     }
