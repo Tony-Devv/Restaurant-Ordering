@@ -8,7 +8,7 @@ public class Main {
         restaurant.startOrderingProcess();
         
         System.out.println("\n╔══════════════════════════════════════╗");
-        System.out.println("║  Thank you for using our system! 🍕    ║");
-        System.out.println("╚════════════════════════════════════════╝");
+        System.out.println("║  Thank you for using our system!     ║");
+        System.out.println("╚══════════════════════════════════════╝");
     }
 }
