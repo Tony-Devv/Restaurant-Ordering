@@ -7,7 +7,7 @@ public class Order {
     private String orderId;
     private List<MenuItem> items;
     private Map<MenuItem, Integer> quantities;
-    private String orderType; // "Dine-in", "Delivery", "Takeaway"
+    private String orderType; 
     private Date timestamp;
 
     public Order() {
@@ -39,7 +39,6 @@ public class Order {
         return total;
     }
 
-    // Getters and Setters
     public String getOrderId() {
         return orderId;
     }
@@ -72,4 +71,5 @@ public class Order {
         sb.append("Subtotal: $").append(String.format("%.2f", getSubtotal()));
         return sb.toString();
     }
+
 }
