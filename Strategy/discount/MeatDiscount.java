@@ -4,7 +4,7 @@ import model.MenuItem;
 import model.Order;
 
 public class MeatDiscount implements DiscountStrategy {
-    private final double amount; // fixed amount per meat item
+    private final double amount; 
 
     public MeatDiscount(double amount) {
         this.amount = amount;
@@ -26,3 +26,4 @@ public class MeatDiscount implements DiscountStrategy {
         return "Meat Discount";
     }
 }
+
