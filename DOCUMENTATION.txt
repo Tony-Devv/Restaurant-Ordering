@@ -1,0 +1,43 @@
+Restaurant Ordering & Billing System — Design Decisions and Rationale
+
+1. Overview
+This document explains the architecture, main components, applied design patterns, and SOLID principles for the Restaurant Ordering & Billing System. The codebase is modular and designed for extension and maintainability.
+
+2. High-level architecture
+- Facade (RestaurantFacade): single entry point for the ordering workflow (display menu, create order, notify kitchen, billing & payment).
+- Domain entities: Order, MenuItem and concrete base items (BasePizza, BaseBurger, BaseDessert, BaseBeverage).
+- Customization: AddOnDecorator and concrete decorators (ExtraCheese, Mushrooms, Olives, SpicySauce, BBQSauce).
+- Menu creation: Abstract Factory (MenuFactory) for menu families, and Factory Method (PizzaFactory, BurgerFactory) for specific pizzas/burgers.
+- Notification: OrderNotifier (subject) and KitchenDisplay/WaiterDisplay (observers).
+- Billing: BillingService, TaxCalculator, and Bill.
+- Payment: PaymentStrategy implementations: CashPayment, CardPayment, MobileWalletPayment.
+- Discounts: DiscountStrategy implementations (PizzaDiscount, MeatDiscount, ChickenDiscount) and DiscountFactory to create strategies.
+
+3. Mapping design patterns to classes
+- Facade: RestaurantFacade coordinates ordering flow, factories, billing, payment, and notifications.
+- Observer: OrderNotifier (Subject), OrderObserver (interface), KitchenDisplay, WaiterDisplay.
+- Decorator: AddOnDecorator and concrete decorators.
+- Abstract Factory: MenuFactory and concrete families.
+- Factory Method: PizzaFactory, BurgerFactory and concrete implementations.
+- Strategy: DiscountStrategy and PaymentStrategy are both Strategy Pattern usages.
+
+4. SOLID principles & justification
+- Single Responsibility: each class has a single responsibility (TaxCalculator only computes tax, BillingService handles billing).
+- Open/Closed: new menu families, discount rules, payment methods, or add-ons can be added by creating new classes without changing existing code.
+- Liskov Substitution: concrete MenuItem and decorators can be used where MenuItem is expected.
+- Interface Segregation: small focused interfaces.
+- Dependency Inversion: high-level modules depend on abstractions.
+
+5. Extension points
+- New menu family: implement MenuFactory.
+- New pizza/burger type: extend PizzaFactory.
+- New add-on: implement AddOnDecorator.
+- New discount rule: implement DiscountStrategy.
+- New payment method: implement PaymentStrategy.
+
+6. Notes and caveats
+- Order.quantities maps by object identity; implement equals/hashCode on base items for logical equality if needed.
+- Console-based simulation; separate UI and business logic for production systems.
+- Payment simulation: payments are mocked (no real gateway).
+
+End of document.
