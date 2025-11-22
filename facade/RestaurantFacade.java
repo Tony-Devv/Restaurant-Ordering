@@ -24,14 +24,11 @@ public class RestaurantFacade {
         this.orderNotifier = new OrderNotifier();
         this.scanner = new Scanner(System.in);
 
-        // Register observers (Kitchen and Waiter)
         orderNotifier.attach(new KitchenDisplay("Main Kitchen"));
         orderNotifier.attach(new WaiterDisplay("John"));
     }
 
-    /**
-     * Main entry point - displays menu and handles ordering
-     */
+     
     public void startOrderingProcess() {
         System.out.println("╔════════════════════════════════════════╗");
         System.out.println("║   Welcome to Java Restaurant System    ║");
@@ -39,10 +36,8 @@ public class RestaurantFacade {
 
         Order order = new Order();
 
-        // Step 1: Choose order type
         chooseOrderType(order);
 
-        // Step 2: Display and select from menu
         boolean addingItems = true;
         while (addingItems) {
             displayMainMenu();
@@ -66,22 +61,17 @@ public class RestaurantFacade {
             }
         }
 
-        // Step 3: Place order (notify kitchen and waiter)
         if (!order.getItems().isEmpty()) {
-            orderNotifier.placeOrder(order); // <-- this is where the notification happens
+            orderNotifier.placeOrder(order); 
 
-            // === PLACE THE BILLING & PAYMENT CODE BELOW THIS LINE ===
-            // Example: choose a discount automatically based on items (simple rule)
-            DiscountStrategy discount = new NoDiscount(); // default
+            DiscountStrategy discount = new NoDiscount(); 
             boolean hasPizza = order.getItems().stream().anyMatch(i -> "Pizza".equalsIgnoreCase(i.getCategory()));
             if (hasPizza)
                 discount = new PizzaDiscount(0.10);
 
-            // create billing service with tax rate (e.g., 14%)
             BillingService billing = new BillingService(new TaxCalculator(0.14));
             billing.setDiscountStrategy(discount);
 
-            // Ask for payment
             
                 System.out.println("\n  ┌───────────────  Payment  ─────────────────┐");
                 System.out.println("  │ 1. Cash                                   │");
@@ -203,7 +193,6 @@ public class RestaurantFacade {
                 return;
         }
 
-        // Customize with add-ons (Decorator)
         item = customizeItem(item);
 
         System.out.print("Quantity: ");
@@ -241,7 +230,6 @@ public class RestaurantFacade {
 
         MenuItem pizza = factory.orderPizza(pizzaType);
 
-        // Customize with add-ons (Decorator)
         pizza = customizeItem(pizza);
 
         System.out.print("Quantity: ");
