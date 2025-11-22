@@ -1,7 +1,7 @@
 package billing;
 
 public class TaxCalculator {
-    private final double taxRate; // e.g., 0.14 for 14%
+    private final double taxRate; 
 
     public TaxCalculator(double taxRate) {
         this.taxRate = taxRate;
@@ -15,3 +15,4 @@ public class TaxCalculator {
         return taxRate;
     }
 }
+
