@@ -9,7 +9,6 @@ public class CardPayment implements PaymentStrategy {
 
     @Override
     public boolean pay(double amount) {
-        // NOTE: In real app we'd call a gateway. Here we simulate success.
         System.out.printf("Charging card %s for $%.2f ... Approved.%n", mask(cardNumber), amount);
         return true;
     }
@@ -24,3 +23,4 @@ public class CardPayment implements PaymentStrategy {
         return "Credit Card";
     }
 }
+
