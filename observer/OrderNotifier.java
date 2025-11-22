@@ -15,7 +15,6 @@ public class OrderNotifier implements OrderSubject {
     @Override
     public void attach(OrderObserver observer) {
         observers.add(observer);
-        // System.out.println(observer.getClass().getSimpleName() + " subscribed to order notifications.");
     }
 
     @Override
@@ -32,9 +31,6 @@ public class OrderNotifier implements OrderSubject {
         }
     }
 
-    /**
-     * Place order and notify all observers
-     */
     public void placeOrder(Order order) {
         System.out.println("\n Order Placed Successfully!");
         System.out.println(order);
@@ -42,4 +38,5 @@ public class OrderNotifier implements OrderSubject {
         
     }
     
+
 }
