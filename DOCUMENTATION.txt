@@ -13,13 +13,72 @@ This document explains the architecture, main components, applied design pattern
 - Payment: PaymentStrategy implementations: CashPayment, CardPayment, MobileWalletPayment.
 - Discounts: DiscountStrategy implementations (PizzaDiscount, MeatDiscount, ChickenDiscount) and DiscountFactory to create strategies.
 
-3. Mapping design patterns to classes
-- Facade: RestaurantFacade coordinates ordering flow, factories, billing, payment, and notifications.
-- Observer: OrderNotifier (Subject), OrderObserver (interface), KitchenDisplay, WaiterDisplay.
-- Decorator: AddOnDecorator and concrete decorators.
-- Abstract Factory: MenuFactory and concrete families.
-- Factory Method: PizzaFactory, BurgerFactory and concrete implementations.
-- Strategy: DiscountStrategy and PaymentStrategy are both Strategy Pattern usages.
+3. Design Patterns — Mapping and Purpose
+
+3.1 Facade Pattern
+    Classes: RestaurantFacade
+    Why used:
+      - Simplifies a complex workflow (menu → order → notify kitchen → billing → payment).
+      - Shields the client from the complexity of multiple subsystems.
+      - Reduces coupling between UI/driver code and business logic.
+      - Ideal for a simulated console or future GUI.
+
+3.2 Observer Pattern
+    Classes: 
+      - Subject: OrderNotifier
+      - Observer: OrderObserver
+      - Concrete Observers: KitchenDisplay, WaiterDisplay
+    Why used:
+      - Simplifies a complex workflow (menu → order → notify kitchen → billing → payment).
+      - Shields the client from the complexity of multiple subsystems.
+      - Reduces coupling between UI/driver code and business logic.
+      - Ideal for a simulated console or future GUI.
+
+3.3 Decorator Pattern
+    Classes: 
+      - AddOnDecorator
+      - Concrete decorators: ExtraCheese, Mushrooms, Olives, etc.
+    Why used:
+      - Allows dynamic and flexible customization of menu items (add-ons).
+      - Supports unlimited combinations of toppings without exploding the number of subclasses.
+      - Preserves Open/Closed Principle — add-ons are added via new classes, not by editing existing menu items.
+      - Perfect fit for “add topping” or “add ingredient” behavior.
+
+3.4 Abstract Factory Pattern
+    Classes: 
+      - MenuFactory
+      - Concrete factories for menu families (e.g., ItalianMenuFactory, AmericanMenuFactory)
+    Why used:
+      - Restaurants often have different families of menus (Italian, Kids Menu, Breakfast Menu).
+      - Ensures consistency between related items (e.g., an Italian factory creates Italian pizzas, Italian desserts…).
+      - Helps create "product families" without coupling client code to concrete classes.
+
+3.5 Factory Method Pattern
+    Classes: 
+      - PizzaFactory
+      - BurgerFactory
+    Why used:
+      - Allows subclasses to decide which specific pizza or burger object to create.
+      - Avoids having large switch statements or if-else chains.
+      - Makes it easy to add new pizza/burger types while keeping creator logic isolated.
+
+3.6 Strategy Pattern
+  Used twice:
+    DiscountStrategy
+      Classes: 
+        - DiscountStrategy, PizzaDiscount, MeatDiscount, ChickenDiscount
+      Why used:
+        - Different discount rules apply to different food categories.
+        - Allows changing the discount algorithm without changing billing logic.
+        - Enables combining strategies via a DiscountFactory.
+
+     PaymentStrategy
+      Classes: 
+        - PaymentStrategy, CashPayment, CardPayment, MobileWalletPayment
+      Why used:
+        - Payment behavior varies widely depending on method.
+        - Keeps payment logic interchangeable and loosely coupled.
+        - Extensible for future payments (PayPal, crypto, reward points…).
 
 4. SOLID principles & justification
 - Single Responsibility: each class has a single responsibility (TaxCalculator only computes tax, BillingService handles billing).
