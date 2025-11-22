@@ -10,7 +10,7 @@ public class BillingService {
 
     public BillingService(TaxCalculator taxCalculator) {
         this.taxCalculator = taxCalculator;
-        this.discountStrategy = null; // default no discount
+        this.discountStrategy = null; 
     }
 
     public void setDiscountStrategy(DiscountStrategy discountStrategy) {
@@ -28,7 +28,6 @@ public class BillingService {
 
         Bill bill = new Bill(order, subtotal, discount, tax, total);
 
-        // Process payment
         boolean paid = paymentStrategy.pay(total);
         if (paid) {
             System.out.println("Payment successful via " + paymentStrategy.getName());
@@ -40,3 +39,4 @@ public class BillingService {
         return bill;
     }
 }
+
