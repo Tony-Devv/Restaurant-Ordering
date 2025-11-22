@@ -4,7 +4,7 @@ package model;
 public class BaseBurger implements MenuItem {
     private String name;
     private double basePrice;
-    private String category; // "Chicken" or "Meat" for discount
+    private String category; 
 
     public BaseBurger(String name, double basePrice, String category) {
         this.name = name;
@@ -26,4 +26,5 @@ public class BaseBurger implements MenuItem {
     public String getCategory() {
         return category;
     }
+
 }
