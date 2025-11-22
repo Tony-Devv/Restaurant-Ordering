@@ -4,7 +4,7 @@ import model.MenuItem;
 import model.Order;
 
 public class PizzaDiscount implements DiscountStrategy {
-    private final double percent; // e.g., 0.10 for 10%
+    private final double percent; 
 
     public PizzaDiscount(double percent) {
         this.percent = percent;
@@ -26,3 +26,4 @@ public class PizzaDiscount implements DiscountStrategy {
         return "Pizza Discount";
     }
 }
+
