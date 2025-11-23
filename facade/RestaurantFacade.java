@@ -2,8 +2,7 @@ package facade;
 
 import billing.*;
 import Strategy.discount.DiscountStrategy;
-import Strategy.discount.NoDiscount;
-import Strategy.discount.PizzaDiscount;
+import Strategy.discount.DiscountFactory;
 import Strategy.payment.CardPayment;
 import Strategy.payment.CashPayment;
 import Strategy.payment.MobileWalletPayment;
@@ -64,10 +63,8 @@ public class RestaurantFacade {
         if (!order.getItems().isEmpty()) {
             orderNotifier.placeOrder(order); 
 
-            DiscountStrategy discount = new NoDiscount(); 
-            boolean hasPizza = order.getItems().stream().anyMatch(i -> "Pizza".equalsIgnoreCase(i.getCategory()));
-            if (hasPizza)
-                discount = new PizzaDiscount(0.10);
+            // Use DiscountFactory to automatically select best discount (follows OCP)
+            DiscountStrategy discount = DiscountFactory.getDiscountForOrder(order);
 
             BillingService billing = new BillingService(new TaxCalculator(0.14));
             billing.setDiscountStrategy(discount);
